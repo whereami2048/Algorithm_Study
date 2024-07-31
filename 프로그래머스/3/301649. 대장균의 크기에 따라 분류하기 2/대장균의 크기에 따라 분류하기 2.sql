@@ -1,0 +1,13 @@
+select RANKED_ECOLI.ID,
+(CASE
+ when RANKED_ECOLI.RANK = 1 then "CRITICAL"
+ when RANKED_ECOLI.RANK = 2 then "HIGH"
+ when RANKED_ECOLI.RANK = 3 then "MEDIUM"
+ else "LOW"
+ end
+) as COLONY_NAME
+from (select ID, NTILE(4)
+     OVER(ORDER BY SIZE_OF_COLONY DESC) as "RANK"
+     from ECOLI_DATA) as RANKED_ECOLI
+order by RANKED_ECOLI.ID asc
+
