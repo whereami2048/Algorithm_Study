@@ -1,42 +1,42 @@
 import sys
+sys.setrecursionlimit(10000000)
+input = lambda: sys.stdin.readline().rstrip()
 
-input = sys.stdin.readline
-
-v, e = map(int, input().split())
+V, E = map(int, input().split())
 
 edges = []
-
-for i in range(e):
-    a, b, c = map(int, input().split())
-    edges.append((a, b, c))
-
+for _ in range(E):
+    A, B, C = map(int, input().split())
+    edges.append((A, B, C))
 edges.sort(key=lambda x: x[2])
 
-parent = [i for i in range(v + 1)]
 
+# Union-Find
+parent = [i for i in range(V+1)]
 
-def find_parent(parent, vertex):
-    if parent[vertex] == vertex:
-        return vertex
+def get_parent(x):
+    if parent[x] == x:
+        return x
+    parent[x] = get_parent(parent[x])
+    return parent[x]
 
-    parent[vertex] = find_parent(parent, parent[vertex])
+def union_parent(a, b):
+    a = get_parent(a)
+    b = get_parent(b)
 
-    return parent[vertex]
-
-def union_parent(x, y):
-    x = find_parent(parent, x)
-    y = find_parent(parent, y)
-
-    if x < y:
-        parent[y] = x
+    if a < b:
+        parent[b] = a
     else:
-        parent[x] = y
+        parent[a] = b
 
-result = 0
+def same_parent(a, b):
+    return get_parent(a) == get_parent(b)
 
-for start, end, cost in edges:
-    if not find_parent(parent, start) == find_parent(parent, end):
-        union_parent(start, end)
-        result += cost
 
-print(result)
+answer = 0
+for a, b, cost in edges:
+    if not same_parent(a, b):
+        union_parent(a, b)
+        answer += cost
+
+print(answer)
